@@ -6,6 +6,29 @@ def print_dictionary(board: dict):
         print(board[i])
 
 
+def validate_sudoku(board: dict):
+    for column_id in range(9):
+        if number == board[input_row_id][column_id]:
+            if mode == 0:
+                return False
+            else:
+                return [input_row_id, column_id]
+    for row_id in range(9):
+        if number == board[row_id][input_column_id]:
+            if mode == 0:
+                return False
+            else:
+                return [row_id, input_column_id]
+    box_start_row = input_row_id // 3 * 3
+    box_start_col = input_column_id // 3 * 3
+    for i in range(3):
+        for j in range(3):
+            if board[i + box_start_row][j + box_start_col] == number:
+                if mode == 0:
+                    return False
+                else:
+                    return [i + box_start_row, j + box_start_col]
+    return True
 def is_valid_number(number, input_column_id, input_row_id, board: dict, mode: int):
     for column_id in range(9):
         if number == board[input_row_id][column_id]:
