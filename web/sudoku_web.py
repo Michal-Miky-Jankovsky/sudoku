@@ -1,5 +1,4 @@
 import random
-import tkinter as tk
 
 
 def print_dictionary(board: dict):
@@ -80,45 +79,4 @@ for rowIndex in range(9):
         rows.append(" ")
     sudoku[rowIndex] = rows
 sudoku = sudoku_solver(sudoku, 0)
-
-window = tk.Tk()
-
-window.geometry("500x500")
-window.title("Sudoku")
-
-label = tk.Label(window, text="hello world!", font=("Arial", 18))
-label.pack(padx=20, pady=20)
-
-textbox = tk.Text(window, height=3, font=("Arial", 16))
-textbox.pack(padx=10)
-
-
-button_frame = tk.Frame(window)
-button_frame.columnconfigure(0, weight=1)
-button_frame.columnconfigure(1, weight=1)
-
-button_1 = tk.Button(button_frame, text="1", font=("Arial", 15))
-button_1.grid(row=0, column=0, sticky=tk.EW)
-
-button_2 = tk.Button(button_frame, text="1", font=("Arial", 15))
-button_2.grid(row=0, column=1, sticky=tk.EW)
-
-button_3 = tk.Button(button_frame, text="1", font=("Arial", 15))
-button_3.grid(row=1, column=0, sticky=tk.EW)
-
-button_4 = tk.Button(button_frame, text="1", font=("Arial", 15))
-button_4.grid(row=1, column=1, sticky=tk.EW)
-
-button_frame.pack(fill="x")
-
-button = tk.Button(window, text="test")
-button.place(x=200, y=200, height=100, width=100)
-
-window.mainloop()
-
-class MyGUI:
-
-    def __init__(self):
-        self.root = tk.Tk()
-        self.root.mainloop()
-
+print_dictionary(sudoku)
