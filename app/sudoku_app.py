@@ -86,21 +86,9 @@ def sudoku_button(r, c):
     buttons_grid[r][c]["bg"] = "blue"
 
 
-def easy():
+def difficulty_mode(dif):
     global difficulty
-    difficulty = 25
-    menu.destroy()
-
-
-def medium():
-    global difficulty
-    difficulty = 35
-    menu.destroy()
-
-
-def hard():
-    global difficulty
-    difficulty = 45
+    difficulty = dif
     menu.destroy()
 
 
@@ -111,16 +99,19 @@ label = tk.Label(master=menu, text="choose a difficulty", font=("Arial", 30))
 label.pack(padx=10, pady=10)
 button_grid = tk.Frame(menu)
 button_grid.rowconfigure(0, minsize=100, weight=1)
-button_grid.columnconfigure([0, 1, 2], minsize=100, weight=1)
-Button_easy = tk.Button(master=button_grid, text="easy", font=("Arial", 18), command=easy)
+for h in range(3):
+    button_grid.columnconfigure(h, minsize=100, weight=1)
+Button_easy = tk.Button(master=button_grid, text="easy", font=("Arial", 18),
+                        command=lambda dif=25: difficulty_mode(dif))
 Button_easy.grid(row=0, column=0, sticky="nsew", padx=5, pady=5)
-Button_medium = tk.Button(master=button_grid, text="medium", font=("Arial", 18), command=medium)
+Button_medium = tk.Button(master=button_grid, text="medium", font=("Arial", 18),
+                          command=lambda dif=35: difficulty_mode(dif))
 Button_medium.grid(row=0, column=1, sticky="nsew", padx=5, pady=5)
-Button_hard = tk.Button(master=button_grid, text="hard", font=("Arial", 18), command=hard)
+Button_hard = tk.Button(master=button_grid, text="hard", font=("Arial", 18),
+                        command=lambda dif=45: difficulty_mode(dif))
 Button_hard.grid(row=0, column=2, sticky="nsew", padx=5, pady=5)
 button_grid.pack(fill="x")
 menu.mainloop()
-
 
 sudoku = {}
 for rowIndex in range(9):
@@ -131,7 +122,6 @@ for rowIndex in range(9):
 users_sudoku = sudoku_solver_and_creator(sudoku, difficulty)
 starting_sudoku = users_sudoku
 
-
 window = tk.Tk()
 window.title("Sudoku")
 buttons_grid = []
@@ -139,7 +129,7 @@ sudoku_frame = tk.Frame(window)
 for button_row in range(9):
     row = []
     for button_column in range(9):
-        button = tk.Button(master=sudoku_frame, text=users_sudoku[button_row][button_column], height=3, width=6,
+        button = tk.Button(master=sudoku_frame, text=users_sudoku[button_row][button_column], height=3, width=3,
                            bg="white", command=lambda r=button_row, c=button_column: sudoku_button(r, c))
         button.grid(row=button_row, column=button_column)
         row.append(button)
@@ -147,7 +137,7 @@ for button_row in range(9):
 sudoku_frame.pack(fill="x", padx=70, pady=25)
 numbers_frame = tk.Frame(window)
 for button_column in range(9):
-    button = tk.Button(master=numbers_frame, text=button_column + 1, height=3, width=6,)
+    button = tk.Button(master=numbers_frame, text=button_column + 1, height=3, width=3,)
     button.grid(row=0, column=button_column, padx=5)
 numbers_frame.pack(fill="x", padx=25, pady=25)
 window.mainloop()
