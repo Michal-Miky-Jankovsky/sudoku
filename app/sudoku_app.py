@@ -51,7 +51,8 @@ def is_valid_number(number, input_column_id, input_row_id, board: dict, mode: in
     return True
 
 
-def sudoku_solver(board: dict, numbers_solved: int):
+def sudoku_solver_and_creator(board: dict, del_numbers: int):
+    numbers_solved = 0
     while numbers_solved < 81:
         row_id = random.randint(0, 8)
         column_id = random.randint(0, 8)
@@ -70,7 +71,55 @@ def sudoku_solver(board: dict, numbers_solved: int):
                     coordinates = is_valid_number(generated_number, column_id, row_id, board, 1)
                     board[int(coordinates[0])][int(coordinates[1])] = " "
                     numbers_solved -= 1
+    while del_numbers > 0:
+        row_id = random.randint(0, 8)
+        column_id = random.randint(0, 8)
+        if board[row_id][column_id] == " ":
+            pass
+        else:
+            board[row_id][column_id] = " "
+            del_numbers -= 1
     return board
+
+
+def sudoku_button(r, c):
+    buttons_grid[r][c]["bg"] = "blue"
+
+
+def easy():
+    global difficulty
+    difficulty = 25
+    menu.destroy()
+
+
+def medium():
+    global difficulty
+    difficulty = 35
+    menu.destroy()
+
+
+def hard():
+    global difficulty
+    difficulty = 45
+    menu.destroy()
+
+
+difficulty = 0
+menu = tk.Tk()
+menu.title("Sudoku")
+label = tk.Label(master=menu, text="choose a difficulty", font=("Arial", 30))
+label.pack(padx=10, pady=10)
+button_grid = tk.Frame(menu)
+button_grid.rowconfigure(0, minsize=100, weight=1)
+button_grid.columnconfigure([0, 1, 2], minsize=100, weight=1)
+Button_easy = tk.Button(master=button_grid, text="easy", font=("Arial", 18), command=easy)
+Button_easy.grid(row=0, column=0, sticky="nsew", padx=5, pady=5)
+Button_medium = tk.Button(master=button_grid, text="medium", font=("Arial", 18), command=medium)
+Button_medium.grid(row=0, column=1, sticky="nsew", padx=5, pady=5)
+Button_hard = tk.Button(master=button_grid, text="hard", font=("Arial", 18), command=hard)
+Button_hard.grid(row=0, column=2, sticky="nsew", padx=5, pady=5)
+button_grid.pack(fill="x")
+menu.mainloop()
 
 
 sudoku = {}
@@ -79,46 +128,26 @@ for rowIndex in range(9):
     for columnIndex in range(9):
         rows.append(" ")
     sudoku[rowIndex] = rows
-sudoku = sudoku_solver(sudoku, 0)
+users_sudoku = sudoku_solver_and_creator(sudoku, difficulty)
+starting_sudoku = users_sudoku
+
 
 window = tk.Tk()
-
-window.geometry("500x500")
 window.title("Sudoku")
-
-label = tk.Label(window, text="hello world!", font=("Arial", 18))
-label.pack(padx=20, pady=20)
-
-textbox = tk.Text(window, height=3, font=("Arial", 16))
-textbox.pack(padx=10)
-
-
-button_frame = tk.Frame(window)
-button_frame.columnconfigure(0, weight=1)
-button_frame.columnconfigure(1, weight=1)
-
-button_1 = tk.Button(button_frame, text="1", font=("Arial", 15))
-button_1.grid(row=0, column=0, sticky=tk.EW)
-
-button_2 = tk.Button(button_frame, text="1", font=("Arial", 15))
-button_2.grid(row=0, column=1, sticky=tk.EW)
-
-button_3 = tk.Button(button_frame, text="1", font=("Arial", 15))
-button_3.grid(row=1, column=0, sticky=tk.EW)
-
-button_4 = tk.Button(button_frame, text="1", font=("Arial", 15))
-button_4.grid(row=1, column=1, sticky=tk.EW)
-
-button_frame.pack(fill="x")
-
-button = tk.Button(window, text="test")
-button.place(x=200, y=200, height=100, width=100)
-
+buttons_grid = []
+sudoku_frame = tk.Frame(window)
+for button_row in range(9):
+    row = []
+    for button_column in range(9):
+        button = tk.Button(master=sudoku_frame, text=users_sudoku[button_row][button_column], height=3, width=6,
+                           bg="white", command=lambda r=button_row, c=button_column: sudoku_button(r, c))
+        button.grid(row=button_row, column=button_column)
+        row.append(button)
+    buttons_grid.append(row)
+sudoku_frame.pack(fill="x", padx=70, pady=25)
+numbers_frame = tk.Frame(window)
+for button_column in range(9):
+    button = tk.Button(master=numbers_frame, text=button_column + 1, height=3, width=6,)
+    button.grid(row=0, column=button_column, padx=5)
+numbers_frame.pack(fill="x", padx=25, pady=25)
 window.mainloop()
-
-class MyGUI:
-
-    def __init__(self):
-        self.root = tk.Tk()
-        self.root.mainloop()
-
