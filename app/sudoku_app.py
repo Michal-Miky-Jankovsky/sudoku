@@ -80,6 +80,8 @@ def delete_from_sudoku(board: list, del_numbers: int):
 def sudoku_button(r, c):
     global buttons_grid, label
     label["text"] = " "
+    if buttons_grid[r][c]["bg"] == "gray":
+        buttons_grid[r][c]["text"] = " "
     for row in range(9):
         for column in range(9):
             if buttons_grid[row][column]["bg"] == "gray" or buttons_grid[row][column]["bg"] == "red":
@@ -105,6 +107,35 @@ def difficulty_mode(dif):
     global difficulty
     difficulty = dif
     menu.destroy()
+
+
+def help_button_def():
+    global menu_end
+    menu.destroy()
+    menu_end = False
+    help_menu = tk.Tk()
+    help_menu.title("Sudoku help")
+    help_label = tk.Label(master=help_menu, text="mazání čísel je dvojklikem\n"
+                                                 "čísla se dají zadávat kliknutím na tlačítko nebo numpedem\n"
+                                                 "bavte se :)", font=("Comic Sans MS", 16))
+    help_label.pack(pady=10, padx=10)
+    back_button = tk.Button(master=help_menu, text="back", font=("Comic Sans MS", 18), command=help_menu.destroy)
+    back_button.pack()
+    help_menu.mainloop()
+
+
+def credits_button_def():
+    global menu_end
+    menu.destroy()
+    menu_end = False
+    credits_menu = tk.Tk()
+    credits_menu.title("Sudoku credits")
+    credits_label = tk.Label(master=credits_menu, text="autor: Jiří Černohorský\ndatum: 24.5.",
+                             font=("Comic Sans MS", 16))
+    credits_label.pack(pady=10, padx=10)
+    back_button = tk.Button(master=credits_menu, text="back", font=("Comic Sans MS", 18), command=credits_menu.destroy)
+    back_button.pack()
+    credits_menu.mainloop()
 
 
 def hint():
@@ -171,29 +202,39 @@ def win_new_game():
 while True:
     show = False
     end = True
+
     """
     difficulty menu
     """
-    difficulty = 0
-    menu = tk.Tk()
-    menu.title("Sudoku")
-    label = tk.Label(master=menu, text="choose a difficulty", font=("Comic Sans MS", 30))
-    label.pack(padx=10, pady=10)
-    button_grid = tk.Frame(menu)
-    button_grid.rowconfigure(0, minsize=100, weight=1)
-    for h in range(3):
-        button_grid.columnconfigure(h, minsize=100, weight=1)
-    Button_easy = tk.Button(master=button_grid, text="easy", font=("Comic Sans MS", 18),
-                            command=lambda dif=25: difficulty_mode(dif))
-    Button_easy.grid(row=0, column=0, sticky="nsew", padx=5, pady=5)
-    Button_medium = tk.Button(master=button_grid, text="medium", font=("Comic Sans MS", 18),
-                              command=lambda dif=35: difficulty_mode(dif))
-    Button_medium.grid(row=0, column=1, sticky="nsew", padx=5, pady=5)
-    Button_hard = tk.Button(master=button_grid, text="hard", font=("Comic Sans MS", 18),
-                            command=lambda dif=45: difficulty_mode(dif))
-    Button_hard.grid(row=0, column=2, sticky="nsew", padx=5, pady=5)
-    button_grid.pack(fill="x")
-    menu.mainloop()
+    while True:
+        menu_end = True
+        difficulty = 0
+        menu = tk.Tk()
+        menu.title("Sudoku")
+        label = tk.Label(master=menu, text="choose a difficulty", font=("Comic Sans MS", 30))
+        label.pack(padx=10, pady=10)
+        button_grid = tk.Frame(menu)
+        button_grid.rowconfigure(0, minsize=100, weight=1)
+        for h in range(3):
+            button_grid.columnconfigure(h, minsize=100, weight=1)
+        Button_easy = tk.Button(master=button_grid, text="easy", font=("Comic Sans MS", 18),
+                                command=lambda dif=1: difficulty_mode(dif))
+        Button_easy.grid(row=0, column=0, sticky="nsew", padx=5, pady=5)
+        Button_medium = tk.Button(master=button_grid, text="medium", font=("Comic Sans MS", 18),
+                                  command=lambda dif=35: difficulty_mode(dif))
+        Button_medium.grid(row=0, column=1, sticky="nsew", padx=5, pady=5)
+        Button_hard = tk.Button(master=button_grid, text="hard", font=("Comic Sans MS", 18),
+                                command=lambda dif=45: difficulty_mode(dif))
+        Button_hard.grid(row=0, column=2, sticky="nsew", padx=5, pady=5)
+        help_button = tk.Button(master=button_grid, text="help", font=("Comic Sans MS", 18), command=help_button_def)
+        help_button.grid(row=1, column=0, sticky="nsew", padx=5, pady=5)
+        credits_button = tk.Button(master=button_grid, text="credits", font=("Comic Sans MS", 18),
+                                   command=credits_button_def)
+        credits_button.grid(row=1, column=2, sticky="nsew", padx=5, pady=5)
+        button_grid.pack(fill="x")
+        menu.mainloop()
+        if menu_end:
+            break
 
     """
     create sudoku
@@ -265,7 +306,7 @@ while True:
     if show:
         end_window = tk.Tk()
         end_window.title("Sudoku")
-        win_label = tk.Label(end_window, text="you win", font=("Comic Sans MS", 30))
+        win_label = tk.Label(end_window, text="you won", font=("Comic Sans MS", 30))
         win_label.pack(pady=10, padx=10)
         win_menu_frame = tk.Frame(end_window)
         win_new_game_button = tk.Button(master=win_menu_frame, text="new game", height=3, width=10,
