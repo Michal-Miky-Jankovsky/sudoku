@@ -1,6 +1,7 @@
+import tkinter as tk
 import random
 import copy
-import tkinter as tk
+
 
 def print_dictionary(board: dict):
     for i in range(9):
@@ -102,6 +103,7 @@ def number_button(c):
             if buttons_grid[row][column]["bg"] == "gray":
                 buttons_grid[row][column]["text"] = number_buttons[c]["text"]
                 buttons_grid[row][column]["bg"] = "white"
+                users_sudoku[row][column] = number_buttons[c]["text"]
 
 
 def difficulty_mode(dif):
@@ -110,83 +112,129 @@ def difficulty_mode(dif):
     menu.destroy()
 
 
-"""
-difficulty menu
-"""
-difficulty = 0
-menu = tk.Tk()
-menu.title("Sudoku")
-label = tk.Label(master=menu, text="choose a difficulty", font=("Arial", 30))
-label.pack(padx=10, pady=10)
-button_grid = tk.Frame(menu)
-button_grid.rowconfigure(0, minsize=100, weight=1)
-for h in range(3):
-    button_grid.columnconfigure(h, minsize=100, weight=1)
-Button_easy = tk.Button(master=button_grid, text="easy", font=("Arial", 18),
-                        command=lambda dif=25: difficulty_mode(dif))
-Button_easy.grid(row=0, column=0, sticky="nsew", padx=5, pady=5)
-Button_medium = tk.Button(master=button_grid, text="medium", font=("Arial", 18),
-                          command=lambda dif=35: difficulty_mode(dif))
-Button_medium.grid(row=0, column=1, sticky="nsew", padx=5, pady=5)
-Button_hard = tk.Button(master=button_grid, text="hard", font=("Arial", 18),
-                        command=lambda dif=45: difficulty_mode(dif))
-Button_hard.grid(row=0, column=2, sticky="nsew", padx=5, pady=5)
-button_grid.pack(fill="x")
-menu.mainloop()
-
-"""
-create sudoku
-"""
-sudoku = []
-for rowIndex in range(9):
-    rows = []
-    for columnIndex in range(9):
-        rows.append(" ")
-    sudoku.append(rows)
-sudoku = sudoku_solver(sudoku, 0)
-finished_sudoku = copy.deepcopy(sudoku)
-users_sudoku = copy.deepcopy(sudoku)
-users_sudoku = delete_from_sudoku(users_sudoku, difficulty)
+def hint():
+    global users_sudoku, buttons_grid
+    for row in range(9):
+        for column in range(9):
+            if buttons_grid[row][column]["bg"] == "white":
+                if users_sudoku[row][column] == " ":
+                    pass
+                else:
+                    number = users_sudoku[row][column]
+                    users_sudoku[row][column] = " "
+                    if is_valid_number(number, column, row, users_sudoku, 0):
+                        users_sudoku[row][column] = number
+                    else:
+                        buttons_grid[row][column]["bg"] = "red"
+                        users_sudoku[row][column] = number
 
 
-"""
-game window
-"""
-window = tk.Tk()
-window.title("Sudoku")
-buttons_grid = []
-sudoku_frame = tk.Frame(window)
-for button_row in range(9):
-    row_list = []
+def restart():
+    global buttons_grid
+    for row in range(9):
+        for column in range(9):
+            if buttons_grid[row][column]["bg"] == "white":
+                buttons_grid[row][column]["text"] = " "
+
+
+def solution():
+    global buttons_grid, finished_sudoku
+    for row in range(9):
+        for column in range(9):
+            if buttons_grid[row][column]["bg"] == "white":
+                buttons_grid[row][column]["text"] = finished_sudoku[row][column]
+
+
+def new_game():
+    global end
+    end = 1
+    game_window.destroy()
+
+
+while True:
+    end = 0
+    """
+    difficulty menu
+    """
+    difficulty = 0
+    menu = tk.Tk()
+    menu.title("Sudoku")
+    label = tk.Label(master=menu, text="choose a difficulty", font=("Arial", 30))
+    label.pack(padx=10, pady=10)
+    button_grid = tk.Frame(menu)
+    button_grid.rowconfigure(0, minsize=100, weight=1)
+    for h in range(3):
+        button_grid.columnconfigure(h, minsize=100, weight=1)
+    Button_easy = tk.Button(master=button_grid, text="easy", font=("Arial", 18),
+                            command=lambda dif=25: difficulty_mode(dif))
+    Button_easy.grid(row=0, column=0, sticky="nsew", padx=5, pady=5)
+    Button_medium = tk.Button(master=button_grid, text="medium", font=("Arial", 18),
+                              command=lambda dif=35: difficulty_mode(dif))
+    Button_medium.grid(row=0, column=1, sticky="nsew", padx=5, pady=5)
+    Button_hard = tk.Button(master=button_grid, text="hard", font=("Arial", 18),
+                            command=lambda dif=45: difficulty_mode(dif))
+    Button_hard.grid(row=0, column=2, sticky="nsew", padx=5, pady=5)
+    button_grid.pack(fill="x")
+    menu.mainloop()
+
+    """
+    create sudoku
+    """
+    sudoku = []
+    for rowIndex in range(9):
+        rows = []
+        for columnIndex in range(9):
+            rows.append(" ")
+        sudoku.append(rows)
+    sudoku = sudoku_solver(sudoku, 0)
+    finished_sudoku = copy.deepcopy(sudoku)
+    users_sudoku = copy.deepcopy(sudoku)
+    users_sudoku = delete_from_sudoku(users_sudoku, difficulty)
+
+    """
+    game window
+    """
+    game_window = tk.Tk()
+    game_window.title("Sudoku")
+    buttons_grid = []
+    sudoku_frame = tk.Frame(game_window)
+    for button_row in range(9):
+        row_list = []
+        for button_column in range(9):
+            button = tk.Button(master=sudoku_frame, text=users_sudoku[button_row][button_column], height=3, width=6,
+                               bg="white", command=lambda r=button_row, c=button_column: sudoku_button(r, c))
+            button.grid(row=button_row, column=button_column)
+            row_list.append(button)
+        buttons_grid.append(row_list)
+    sudoku_frame.pack(fill="x", padx=70, pady=25)
+    for button_row in range(9):
+        for button_column in range(9):
+            if buttons_grid[button_row][button_column]["text"] == " ":
+                pass
+            else:
+                buttons_grid[button_row][button_column]["bg"] = "#E3E3E3"
+
+    numbers_frame = tk.Frame(game_window)
+    number_buttons = []
     for button_column in range(9):
-        button = tk.Button(master=sudoku_frame, text=users_sudoku[button_row][button_column], height=3, width=6,
-                           bg="white", command=lambda r=button_row, c=button_column: sudoku_button(r, c))
-        button.grid(row=button_row, column=button_column)
-        row_list.append(button)
-    buttons_grid.append(row_list)
-sudoku_frame.pack(fill="x", padx=70, pady=25)
-for button_row in range(9):
-    for button_column in range(9):
-        if buttons_grid[button_row][button_column]["text"] == " ":
-            pass
-        else:
-            buttons_grid[button_row][button_column]["bg"] = "#E3E3E3"
+        button = tk.Button(master=numbers_frame, text=button_column + 1, height=3, width=6,
+                           command=lambda c=button_column: number_button(c))
+        button.grid(row=0, column=button_column, padx=5)
+        number_buttons.append(button)
+    numbers_frame.pack(fill="x", padx=25, pady=25)
 
-numbers_frame = tk.Frame(window)
-number_buttons = []
-for button_column in range(9):
-    button = tk.Button(master=numbers_frame, text=button_column + 1, height=3, width=6,
-                       command=lambda c=button_column: number_button(c))
-    button.grid(row=0, column=button_column, padx=5)
-    number_buttons.append(button)
-numbers_frame.pack(fill="x", padx=25, pady=25)
+    menu_frame = tk.Frame(game_window)
+    hint_button = tk.Button(master=menu_frame, text="hint", height=3, width=10, command=hint)
+    hint_button.grid(row=0, column=0, padx=30)
+    restart_button = tk.Button(master=menu_frame, text="restart", height=3, width=10, command=restart)
+    restart_button.grid(row=0, column=1, padx=30)
+    solution_button = tk.Button(master=menu_frame, text="show solution", height=3, width=10, command=solution)
+    solution_button.grid(row=0, column=2, padx=30)
+    new_game_button = tk.Button(master=menu_frame, text="new game", height=3, width=10, command=new_game)
+    new_game_button.grid(row=0, column=3, padx=30)
+    menu_frame.pack(fill="x", padx=20)
+    game_window.mainloop()
 
-menu_frame = tk.Frame(window)
-hint_button = tk.Button(master=menu_frame, text="hint", height=3, width=10, command=hint)
-hint_button.grid(row=0, column=0, padx=55)
-restart_button = tk.Button(master=menu_frame, text="restart", height=3, width=10, command=restart)
-restart_button.grid(row=0, column=1, padx=55)
-solution_button = tk.Button(master=menu_frame, text="show solution", height=3, width=10, command=solution)
-solution_button.grid(row=0, column=2, padx=55)
-menu_frame.pack(fill="x", padx=20)
-window.mainloop()
+    if end == 0:
+        break
+
