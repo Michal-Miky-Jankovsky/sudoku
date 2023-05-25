@@ -1,3 +1,4 @@
+import keyboard as key
 import tkinter as tk
 import random
 import copy
@@ -78,10 +79,11 @@ def delete_from_sudoku(board: list, del_numbers: int):
 
 
 def sudoku_button(r, c):
-    global buttons_grid, label
+    global buttons_grid, label, users_sudoku
     label["text"] = " "
     if buttons_grid[r][c]["bg"] == "gray":
         buttons_grid[r][c]["text"] = " "
+        users_sudoku[r][c] = " "
     for row in range(9):
         for column in range(9):
             if buttons_grid[row][column]["bg"] == "gray" or buttons_grid[row][column]["bg"] == "red":
@@ -98,9 +100,9 @@ def number_button(c):
                 buttons_grid[row][column]["text"] = number_buttons[c]["text"]
                 buttons_grid[row][column]["bg"] = "white"
                 users_sudoku[row][column] = number_buttons[c]["text"]
-                if validate_sudoku(users_sudoku):
-                    show = True
-                    game_window.destroy()
+    if validate_sudoku(users_sudoku):
+        show = True
+        game_window.destroy()
 
 
 def difficulty_mode(dif):
@@ -138,7 +140,7 @@ def credits_button_def():
     credits_menu.mainloop()
 
 
-def hint():
+def mistakes():
     global users_sudoku, buttons_grid, label
     for row in range(9):
         for column in range(9):
@@ -199,6 +201,8 @@ def win_new_game():
     end_window.destroy()
 
 
+for num in range(9):
+    key.add_hotkey(str(num+1), lambda c=num: number_button(c))
 while True:
     show = False
     end = True
@@ -218,7 +222,7 @@ while True:
         for h in range(3):
             button_grid.columnconfigure(h, minsize=100, weight=1)
         Button_easy = tk.Button(master=button_grid, text="easy", font=("Comic Sans MS", 18),
-                                command=lambda dif=1: difficulty_mode(dif))
+                                command=lambda dif=25: difficulty_mode(dif))
         Button_easy.grid(row=0, column=0, sticky="nsew", padx=5, pady=5)
         Button_medium = tk.Button(master=button_grid, text="medium", font=("Comic Sans MS", 18),
                                   command=lambda dif=35: difficulty_mode(dif))
@@ -255,7 +259,6 @@ while True:
     """
     game_window = tk.Tk()
     game_window.title("Sudoku")
-
     buttons_grid = []
     sudoku_frame = tk.Frame(game_window)
     for button_row in range(9):
@@ -288,9 +291,9 @@ while True:
     numbers_frame.pack(fill="x", padx=25, pady=20)
 
     menu_frame = tk.Frame(game_window)
-    hint_button = tk.Button(master=menu_frame, text="hint", font=("Comic Sans MS", 8),
-                            height=3, width=10, command=hint)
-    hint_button.grid(row=0, column=0, padx=30)
+    mistakes_button = tk.Button(master=menu_frame, text="find mistakes", font=("Comic Sans MS", 8),
+                                height=3, width=10, command=mistakes)
+    mistakes_button.grid(row=0, column=0, padx=30)
     restart_button = tk.Button(master=menu_frame, text="restart", font=("Comic Sans MS", 8),
                                height=3, width=10, command=restart)
     restart_button.grid(row=0, column=1, padx=30)
