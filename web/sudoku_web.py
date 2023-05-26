@@ -1,9 +1,9 @@
 import random
 
 
-def print_dictionary(board: dict):
-    for i in range(9):
-        print(board[i])
+def print_list_in_list(board: list):
+    for i in board:
+        print(i)
 
 
 def validate_sudoku(board: dict):
