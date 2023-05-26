@@ -20,46 +20,53 @@ def validate_sudoku(board: list):
 
 
 def is_valid_number(number, input_column_id, input_row_id, board: list, mode: int):
+    #chack for duplicates in number's column
     for column_id in range(9):
         if number == board[input_row_id][column_id]:
-            if mode == 0:
+            if mode == 0:   #mode = 0 (duplicate detection)
                 return False
-            else:
+            else:           #mode = 1 (duplicate's location)
                 return [input_row_id, column_id]
+    #chack for duplicates in number's row
     for row_id in range(9):
         if number == board[row_id][input_column_id]:
-            if mode == 0:
+            if mode == 0:       #mode = 0 (duplicate detection)
                 return False
-            else:
+            else:               #mode = 1 (duplicate's location)
                 return [row_id, input_column_id]
+    #chack for duplicates in number's box
     box_start_row = input_row_id // 3 * 3
     box_start_col = input_column_id // 3 * 3
     for i in range(3):
         for j in range(3):
             if board[i + box_start_row][j + box_start_col] == number:
-                if mode == 0:
+                if mode == 0:   #mode = 0 (duplicate detection)
                     return False
-                else:
+                else:           #mode = 1 (duplicate's location)
                     return [i + box_start_row, j + box_start_col]
     return True
 
 
 def sudoku_solver(board: list, numbers_solved: int):
     while numbers_solved < 81:
+        #generate random empty position
         row_id = random.randint(0, 8)
         column_id = random.randint(0, 8)
         if board[row_id][column_id] == " ":
-            generated_number = random.randint(1, 9)
+            generated_number = random.randint(1, 9)     #generate random number
+            #check if placeable
             if is_valid_number(generated_number, column_id, row_id, board, 0):
                 board[row_id][column_id] = generated_number
                 numbers_solved += 1
             else:
+                #chack same position for all numbers
                 for z in range(1, 10):
                     if is_valid_number(z, column_id, row_id, board, 0):
                         board[row_id][column_id] = z
                         numbers_solved += 1
                         break
                 else:
+                    #remove colliding number
                     coordinates = is_valid_number(generated_number, column_id, row_id, board, 1)
                     board[int(coordinates[0])][int(coordinates[1])] = " "
                     numbers_solved -= 1
@@ -81,13 +88,16 @@ def delete_from_sudoku(board: list, del_numbers: int):
 def sudoku_button(r, c):
     global buttons_grid, label, users_sudoku, bg
     label["text"] = " "
+    #check if was already prest and delete number
     if buttons_grid[r][c]["bg"] == "gray":
         buttons_grid[r][c]["text"] = " "
         users_sudoku[r][c] = " "
     for row in range(9):
         for column in range(9):
+            #reset all to default
             if buttons_grid[row][column]["bg"] == "gray" or buttons_grid[row][column]["bg"] == "red":
                 buttons_grid[row][column]["bg"] = bg
+    #select current prest button
     if buttons_grid[r][c]["bg"] == bg:
         buttons_grid[r][c]["bg"] = "gray"
 
@@ -96,10 +106,12 @@ def number_button(c):
     global number_buttons, buttons_grid, users_sudoku, show, bg
     for row in range(9):
         for column in range(9):
+            #check for selected button
             if buttons_grid[row][column]["bg"] == "gray":
                 buttons_grid[row][column]["text"] = number_buttons[c]["text"]
                 buttons_grid[row][column]["bg"] = bg
                 users_sudoku[row][column] = number_buttons[c]["text"]
+    #check if sudoku is solved
     if validate_sudoku(users_sudoku):
         show = True
         game_window.destroy()
@@ -114,6 +126,7 @@ def difficulty_mode(dif):
 
 def help_button_def():
     global menu_end, bg, fg
+    #configure help menu
     menu.destroy()
     menu_end = False
     help_menu = tk.Tk()
@@ -131,6 +144,7 @@ def help_button_def():
 
 def credits_button_def():
     global menu_end, bg, fg
+    #configure credits menu
     menu.destroy()
     menu_end = False
     credits_menu = tk.Tk()
@@ -161,9 +175,11 @@ def mistakes():
         for column in range(9):
             if buttons_grid[row][column]["bg"] == bg or\
                buttons_grid[row][column]["bg"] == "gray":
+                #find fild places
                 if users_sudoku[row][column] == " ":
                     pass
                 else:
+                    #chack if number is valid
                     number = users_sudoku[row][column]
                     users_sudoku[row][column] = " "
                     if is_valid_number(number, column, row, users_sudoku, 0):
@@ -173,6 +189,7 @@ def mistakes():
                         users_sudoku[row][column] = number
     for row in range(9):
         for column in range(9):
+            # if any mistakes are found change label
             if buttons_grid[row][column]["bg"] == "red":
                 label["text"] = "Red squares are mistakes."
                 return
@@ -182,6 +199,7 @@ def mistakes():
 
 def restart():
     global buttons_grid, label, bg
+    # change all user added number to " "
     label["text"] = " "
     for row in range(9):
         for column in range(9):
@@ -194,6 +212,7 @@ def restart():
 
 def solution():
     global buttons_grid, finished_sudoku, label, bg
+    # change all number to number from finished_sudoku
     label["text"] = " "
     for row in range(9):
         for column in range(9):
@@ -217,6 +236,7 @@ def win_new_game():
 
 
 dark_mode_text = "dark mode: off"
+#add hotkeys for adding numbers
 for num in range(9):
     key.add_hotkey(str(num+1), lambda c=num: number_button(c))
 while True:
@@ -224,10 +244,8 @@ while True:
     end = True
     start_game = False
 
-    """
-    difficulty menu
-    """
     while True:
+        #dark mode config
         if dark_mode_text == "dark mode: off":
             bg = "white"
             fg = "black"
@@ -238,11 +256,17 @@ while True:
             bg_light = "#5A5A5A"
         menu_end = True
         difficulty = 0
+        """
+        main menu config
+        """
+        #window config
         menu = tk.Tk()
         menu.title("Sudoku")
         menu.configure(bg=bg)
+        #header
         label = tk.Label(master=menu, text="choose a difficulty", font=("Comic Sans MS", 30), bg=bg, fg=fg)
         label.pack(padx=10, pady=10)
+        #buttons grid config
         button_grid = tk.Frame(menu)
         button_grid.config(bg=bg)
         for h in range(3):
@@ -285,12 +309,14 @@ while True:
     users_sudoku = delete_from_sudoku(users_sudoku, difficulty)
 
     """
-    game window
+    game window config
     """
     if start_game:
+        #game window config
         game_window = tk.Tk()
         game_window.title("Sudoku")
         game_window.configure(bg=bg)
+        #sudoku grid config
         buttons_grid = []
         sudoku_frame = tk.Frame(game_window)
         sudoku_frame.config(bg=bg)
@@ -311,19 +337,22 @@ while True:
                 else:
                     buttons_grid[button_row][button_column]["bg"] = bg_light
 
+        #discription label
         label = tk.Label(game_window, text=" ", font=("Comic Sans MS", 14), bg=bg, fg=fg)
         label.pack()
 
+        #number buttons config
         numbers_frame = tk.Frame(game_window)
         numbers_frame.config(bg=bg)
         number_buttons = []
         for button_column in range(9):
-            button = tk.Button(master=numbers_frame, text=button_column + 1, font=("Comic Sans MS", 8), height=3, width=6,
-                               command=lambda c=button_column: number_button(c), bg=bg, fg=fg)
+            button = tk.Button(master=numbers_frame, text=button_column + 1, font=("Comic Sans MS", 8), height=3,
+                               width=6, command=lambda c=button_column: number_button(c), bg=bg, fg=fg)
             button.grid(row=0, column=button_column, padx=5)
             number_buttons.append(button)
         numbers_frame.pack(fill="x", padx=25, pady=20)
 
+        #menu buttons config
         menu_frame = tk.Frame(game_window)
         menu_frame.config(bg=bg)
         mistakes_button = tk.Button(master=menu_frame, text="find mistakes", font=("Comic Sans MS", 8),
@@ -342,11 +371,17 @@ while True:
         game_window.mainloop()
 
     if show:
+        """
+        win menu config
+        """
+        #window config
         end_window = tk.Tk()
         end_window.title("Sudoku")
         end_window.config(bg=bg)
+        #header
         win_label = tk.Label(end_window, text="you won", font=("Comic Sans MS", 30), bg=bg, fg=fg)
         win_label.pack(pady=10, padx=10)
+        #buttons grid config
         win_menu_frame = tk.Frame(end_window)
         win_menu_frame.config(bg=bg)
         win_new_game_button = tk.Button(master=win_menu_frame, text="new game", height=3, width=10,
