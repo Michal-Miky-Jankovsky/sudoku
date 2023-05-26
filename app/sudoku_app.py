@@ -113,30 +113,34 @@ def difficulty_mode(dif):
 
 
 def help_button_def():
-    global menu_end
+    global menu_end, bg, fg
     menu.destroy()
     menu_end = False
     help_menu = tk.Tk()
     help_menu.title("Sudoku help")
+    help_menu.config(bg=bg)
     help_label = tk.Label(master=help_menu, text="mazání čísel je dvojklikem\n"
                                                  "čísla se dají zadávat kliknutím na tlačítko nebo numpedem\n"
-                                                 "bavte se :)", font=("Comic Sans MS", 16))
+                                                 "bavte se :)", font=("Comic Sans MS", 16), bg=bg, fg=fg)
     help_label.pack(pady=10, padx=10)
-    back_button = tk.Button(master=help_menu, text="back", font=("Comic Sans MS", 18), command=help_menu.destroy)
+    back_button = tk.Button(master=help_menu, text="back", font=("Comic Sans MS", 18), command=help_menu.destroy,
+                            bg=bg, fg=fg)
     back_button.pack()
     help_menu.mainloop()
 
 
 def credits_button_def():
-    global menu_end
+    global menu_end, bg, fg
     menu.destroy()
     menu_end = False
     credits_menu = tk.Tk()
     credits_menu.title("Sudoku credits")
+    credits_menu.config(bg=bg)
     credits_label = tk.Label(master=credits_menu, text="autor: Jiří Černohorský\ndatum: 24.5.",
-                             font=("Comic Sans MS", 16))
+                             font=("Comic Sans MS", 16), bg=bg, fg=fg)
     credits_label.pack(pady=10, padx=10)
-    back_button = tk.Button(master=credits_menu, text="back", font=("Comic Sans MS", 18), command=credits_menu.destroy)
+    back_button = tk.Button(master=credits_menu, text="back", font=("Comic Sans MS", 18), command=credits_menu.destroy,
+                            bg=bg, fg=fg)
     back_button.pack()
     credits_menu.mainloop()
 
