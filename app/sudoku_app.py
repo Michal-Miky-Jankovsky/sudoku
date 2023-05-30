@@ -327,10 +327,10 @@ while True:
                 box.config(bg=bg)
                 for button_row in range(3):
                     for button_column in range(3):
-                        button = tk.Button(master=box, text=users_sudoku[button_row*(box_row+1)][button_column*(box_column+1)],
+                        button = tk.Button(master=box, text=users_sudoku[button_row+box_row*3][button_column+box_column*3],
                                            font=("Comic Sans MS", 8), height=3, width=6, bg=bg, fg=fg,
-                                           command=lambda r=button_row*(box_row+1), c=button_column*(box_column+1): sudoku_button(r, c))
-                        button.grid(row=button_row*(box_row+1), column=button_column*(box_column+1))
+                                           command=lambda r=button_row+box_row*3, c=button_column+box_column*3: sudoku_button(r, c))
+                        button.grid(row=button_row, column=button_column)
                         if button_row == 0:
                             row_list1.append(button)
                         elif button_row == 1:
