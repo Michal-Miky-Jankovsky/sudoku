@@ -1,3 +1,9 @@
+"""
+program hry sudoku:
+generace
+UI
+kontrola správnosti
+"""
 import keyboard as key
 import tkinter as tk
 import random
@@ -181,20 +187,21 @@ def mistakes():
 
 
 def restart():
-    global buttons_grid, label, bg
+    global buttons_grid, label, bg, users_sudoku
     label["text"] = " "
     for row in range(9):
         for column in range(9):
             if buttons_grid[row][column]["bg"] == "red":
                 buttons_grid[row][column]["bg"] = bg
                 buttons_grid[row][column]["text"] = " "
+                users_sudoku[row][column] = " "
             if buttons_grid[row][column]["bg"] == bg:
                 buttons_grid[row][column]["text"] = " "
+                users_sudoku[row][column] = " "
 
 
 def solution():
     global buttons_grid, finished_sudoku, label, bg
-    label["text"] = " "
     for row in range(9):
         for column in range(9):
             if buttons_grid[row][column]["bg"] == "red":
@@ -202,6 +209,12 @@ def solution():
                 buttons_grid[row][column]["text"] = finished_sudoku[row][column]
             if buttons_grid[row][column]["bg"] == bg:
                 buttons_grid[row][column]["text"] = finished_sudoku[row][column]
+    menu_frame.destroy()
+    numbers_frame.destroy()
+    label.destroy()
+    solution_new_game_button = tk.Button(master=game_window, text="new game", font=("Comic Sans MS", 12),
+                                         height=3, width=15, command=new_game, bg=bg, fg=fg)
+    solution_new_game_button.pack(pady=15)
 
 
 def new_game():
@@ -294,6 +307,7 @@ while True:
         buttons_grid = []
         sudoku_frame = tk.Frame(game_window)
         sudoku_frame.config(bg=bg)
+        """
         for button_row in range(9):
             row_list = []
             for button_column in range(9):
@@ -303,6 +317,30 @@ while True:
                 button.grid(row=button_row, column=button_column)
                 row_list.append(button)
             buttons_grid.append(row_list)
+        """
+        for box_row in range(3):
+            row_list1 = []
+            row_list2 = []
+            row_list3 = []
+            for box_column in range(3):
+                box = tk.Frame(sudoku_frame)
+                box.config(bg=bg)
+                for button_row in range(3):
+                    for button_column in range(3):
+                        button = tk.Button(master=box, text=users_sudoku[button_row*(box_row+1)][button_column*(box_column+1)],
+                                           font=("Comic Sans MS", 8), height=3, width=6, bg=bg, fg=fg,
+                                           command=lambda r=button_row*(box_row+1), c=button_column*(box_column+1): sudoku_button(r, c))
+                        button.grid(row=button_row*(box_row+1), column=button_column*(box_column+1))
+                        if button_row == 0:
+                            row_list1.append(button)
+                        elif button_row == 1:
+                            row_list2.append(button)
+                        else:
+                            row_list3.append(button)
+                box.grid(row=box_row, column=box_column, padx=1, pady=1)
+            buttons_grid.append(row_list1)
+            buttons_grid.append(row_list2)
+            buttons_grid.append(row_list3)
         sudoku_frame.pack(fill="x", padx=70, pady=25)
         for button_row in range(9):
             for button_column in range(9):
@@ -318,8 +356,8 @@ while True:
         numbers_frame.config(bg=bg)
         number_buttons = []
         for button_column in range(9):
-            button = tk.Button(master=numbers_frame, text=button_column + 1, font=("Comic Sans MS", 8), height=3, width=6,
-                               command=lambda c=button_column: number_button(c), bg=bg, fg=fg)
+            button = tk.Button(master=numbers_frame, text=button_column + 1, font=("Comic Sans MS", 8), height=3,
+                               width=6, command=lambda c=button_column: number_button(c), bg=bg, fg=fg)
             button.grid(row=0, column=button_column, padx=5)
             number_buttons.append(button)
         numbers_frame.pack(fill="x", padx=25, pady=20)
